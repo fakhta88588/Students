@@ -1,26 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-            padding: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #555;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Manager (Offline)</title>
+<style>
+  :root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --danger: #f72585;
+    --danger-dark: #e5177b;
+    --success: #4cc9f0;
+    --border: #e2e8f0;
+    --border-dark: #cbd5e0;
+    --text: #2d3748;
+    --text-light: #4a5568;
+    --bg-hover: #f7fafc;
+  }
+  
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
+    color: var(--text);
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    margin: 0 0 20px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  h1 svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  
+  input {
+    font-size: 1rem;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border 0.2s;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+  }
+  
+  button {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  
+  button.primary {
+    background-color: var(--primary);
+    color: white;
+  }
+  
+  button.primary:hover {
+    background-color: var(--primary-dark);
+  }
+  
+  button.danger {
+    background-color: var(--danger);
+    color: white;
+  }
+  
+  button.danger:hover {
+    background-color: var(--danger-dark);
+  }
+  
+  button.secondary {
+    background-color: white;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  
+  button.secondary:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+    align-items: center;
+  }
+  
+  .row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  @media (min-width: 768px) {
+    .row {
+      grid-template-columns: 2fr 1fr 2fr auto auto;
+    }
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.95rem;
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  
+  th {
+    font-weight: 600;
+    color: var(--text-light);
+    background-color: #f8f9fa;
+  }
+  
+  tr:hover {
+    background-color: var(--bg-hover);
+  }
+  
+  .muted {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    display: block;
+  }
+  
+  .pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    background-color: white;
+  }
+  
+  .right {
+    margin-left: auto;
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+  }
+  
+  .empty-state svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
+    opacity: 0.6;
+  }
+  
+  /* GitHub corner ribbon */
+  .github-corner:hover .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+  }
+  
+  @keyframes octocat-wave {
+    0%, 100% { transform: rotate(0); }
+    20%, 60% { transform: rotate(-25deg); }
+    40%, 80% { transform: rotate(10deg); }
+  }
+</style>
 </head>
 <body>
-    <h1>Welcome to My GitHub Page 🎉</h1>
-    <p>This page is working perfectly!</p>
+  <div class="container">
+    <h1>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      Student Manager
+    </h1>
+    
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="name">Name</label>
+          <input id="name" placeholder="e.g., Ali Raza">
+        </div>
+        <div>
+          <label for="age">Age</label>
+          <input id="age" type="number" min="1" max="120" inputmode="numeric" placeholder="e.g., 18">
+        </div>
+        <div>
+          <label for="dept">Department</label>
+          <input id="dept" placeholder="e.g., Computer Science">
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button id="saveBtn" class="primary">Add Student</button>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button id="resetBtn" class="secondary hidden">Cancel</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input id="q" placeholder="Search by name..." style="flex:1; max-width: 300px;">
+        <button id="exportBtn" class="secondary">Export CSV</button>
+        <input id="importFile" type="file" accept=".csv,text/csv" class="hidden">
+        <button id="importBtn" class="secondary">Import CSV</button>
+        <button id="clearBtn" class="danger">Clear All</button>
+        <span class="pill right" id="count">0 students</span>
+      </div>
+      <span class="muted">Tip: Data is saved automatically in your browser. On mobile, "Share → Add to Home Screen" to use like an app.</span>
+    </div>
+
+    <div class="card">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Department</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Student data will appear here -->
+        </tbody>
+      </table>
+      <div id="emptyState" class="empty-state hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p>No students found. Add your first student above!</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const LS_KEY = 'students.v2';
+  const ID_KEY = 'students.v2.nextId';
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => document.querySelectorAll(sel);
+  const state = { students: [], nextId: 1, editingId: null };
+
+  // Load data from localStorage
+  function load(){
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      const nid = localStorage.getItem(ID_KEY);
+      state.students = raw ? JSON.parse(raw) : [];
+      state.nextId = nid ? parseInt(nid,10) : ((state.students.reduce((m,s)=>Math.max(m,s.id),0)+1)||1;
+    } catch(e){ 
+      console.error("Error loading data:", e);
+      state.students = []; 
+      state.nextId = 1; 
+    }
+  }
+  
+  // Save data to localStorage
+  function save(){
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(state.students));
+      localStorage.setItem(ID_KEY, String(state.nextId));
+    } catch(e) {
+      console.error("Error saving data:", e);
+      alert("Failed to save data. Your browser storage might be full.");
+    }
+    render();
+  }
+  
+  // Render the student table
+  function render(){
+    const tbody = $('#tbl tbody');
+    tbody.innerHTML = '';
+    const q = ($('#q').value||'').toLowerCase();
+    
+    const filtered = state.students.filter(s => 
+      (s.name||'').toLowerCase().includes(q) ||
+      (s.dept||'').toLowerCase().includes(q) ||
+      String(s.id).includes(q) ||
+      String(s.age).includes(q)
+    );
+    
+    if (filtered.length === 0) {
+      $('#emptyState').classList.remove('hidden');
+      $('#tbl').classList.add('hidden');
+    } else {
+      $('#emptyState').classList.add('hidden');
+      $('#tbl').classList.remove('hidden');
+      
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.id}</td>
+          <td>${escapeHtml(s.name)}</td>
+          <td>${s.age}</td>
+          <td>${escapeHtml(s.dept||'-')}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="secondary" data-act="edit" data-id="${s.id}">Edit</button>
+              <button class="danger" data-act="del" data-id="${s.id}">Delete</button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    $('#count').textContent = `${filtered.length} student${filtered.length===1?'':'s'}`;
+  }
+  
+  // Escape HTML to prevent XSS
+  function escapeHtml(t){
+    return String(t).replace(/[&<>"']/g, m => 
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  
+  // Add a new student
+  function add(name, age, dept){ 
+    state.students.push({
+      id: state.nextId++, 
+      name: name.trim(), 
+      age: parseInt(age, 10), 
+      dept: dept.trim() 
+    }); 
+    save(); 
+  }
+  
+  // Update existing student
+  function update(id, name, age, dept){ 
+    const s = state.students.find(x=>x.id===id); 
+    if(!s) return; 
+    s.name = name.trim();
+    s.age = parseInt(age, 10);
+    s.dept = dept.trim(); 
+    save(); 
+  }
+  
+  // Remove a student
+  function remove(id){ 
+    state.students = state.students.filter(s=>s.id!==id); 
+    save(); 
+  }
+
+  // Export to CSV
+  function exportCSV(){
+    const rows = [['id','name','age','dept']].concat(
+      state.students.map(s => [
+        s.id,
+        `"${String(s.name).replace(/"/g, '""')}"`,
+        s.age,
+        `"${String(s.dept||'').replace(/"/g, '""')}"`
+      ])
+    );
+    
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); 
+    a.href = url; 
+    a.download = `students_${new Date().toISOString().slice(0,10)}.csv`; 
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  }
+  
+  // Parse CSV line with proper quote handling
+  function parseCsvLine(line){
+    const out = []; 
+    let cur = ''; 
+    let inQ = false;
+    
+    for(let i = 0; i < line.length; i++){
+      const c = line[i];
+      if(c === '"'){ 
+        if(inQ && line[i+1] === '"'){ 
+          cur += '"'; 
+          i++; 
+        } else {
+          inQ = !inQ;
+        }
+      } else if(c === ',' && !inQ){ 
+        out.push(cur); 
+        cur = ''; 
+      } else {
+        cur += c;
+      }
+    }
+    out.push(cur); 
+    return out.map(s => s.trim());
+  }
+  
+  // Import from CSV
+  function importCSV(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        
+        if(lines.length < 1) {
+          alert('Empty CSV file');
+          return;
+        }
+        
+        const header = lines[0].toLowerCase();
+        const cols = header.split(',');
+        const idx = { 
+          id: cols.indexOf('id'), 
+          name: cols.indexOf('name'), 
+          age: cols.indexOf('age'), 
+          dept: cols.indexOf('dept') 
+        };
+        
+        if(idx.name === -1) {
+          alert('CSV must contain a "name" column');
+          return;
+        }
+        
+        let imported = 0;
+        let updated = 0;
+        
+        for(let i = 1; i < lines.length; i++){
+          const p = parseCsvLine(lines[i]);
+          if(p.length < 1) continue;
+          
+          const id = idx.id >= 0 ? parseInt(p[idx.id] || '', 10) : NaN;
+          const name = (p[idx.name] || '').trim();
+          const age = parseInt(p[idx.age] || '0', 10) || 0;
+          const dept = (idx.dept >= 0 ? p[idx.dept] : '').trim();
+          
+          if(!name) continue;
+          
+          if(!isNaN(id) && id > 0){
+            const existing = state.students.find(s => s.id === id);
+            if(existing){
+              existing.name = name;
+              existing.age = age;
+              existing.dept = dept;
+              updated++;
+            } else {
+              state.students.push({id, name, age, dept});
+              imported++;
+              if(id >= state.nextId) state.nextId = id + 1;
+            }
+          } else {
+            state.students.push({id: state.nextId++, name, age, dept});
+            imported++;
+          }
+        }
+        
+        save();
+        alert(`Import complete. ${imported} new students added, ${updated} existing students updated.`);
+      } catch(e) {
+        console.error("Import error:", e);
+        alert('Error importing CSV: ' + e.message);
+      }
+    };
+    reader.onerror = () => alert('Error reading file');
+    reader.readAsText(file);
+  }
+
+  // Event listeners
+  function setupEventListeners(){
+    // Save/Add button
+    $('#saveBtn').addEventListener('click', () => {
+      const name = $('#name').value.trim();
+      const age = parseInt($('#age').value || '0', 10);
+      const dept = $('#dept').value.trim();
+      
+      if(!name){
+        alert('Name is required');
+        $('#name').focus();
+        return;
+      }
+      
+      if(age <= 0 || age > 120){
+        alert('Please enter a valid age between 1 and 120');
+        $('#age').focus();
+        return;
+      }
+      
+      if(state.editingId){
+        update(state.editingId, name, age, dept);
+        state.editingId = null;
+        $('#saveBtn').textContent = 'Add Student';
+        $('#resetBtn').classList.add('hidden');
+      } else {
+        add(name, age, dept);
+      }
+      
+      $('#name').value = '';
+      $('#age').value = '';
+      $('#dept').value = '';
+      $('#name').focus();
+    });
+    
+    // Cancel edit button
+    $('#resetBtn').addEventListener('click', () => {
+      state.editingId = null;
+      $('#name').value = '';
+      $('#age').value = '';
+      $('#dept').value = '';
+      $('#saveBtn').textContent = 'Add Student';
+      $('#resetBtn').classList.add('hidden');
+      $('#name').focus();
+    });
+    
+    // Search input
+    $('#q').addEventListener('input', render);
+    
+    // Export button
+    $('#exportBtn').addEventListener('click', exportCSV);
+    
+    // Import button
+    $('#importBtn').addEventListener('click', () => $('#importFile').click());
+    $('#importFile').addEventListener('change', e => {
+      const f = e.target.files[0]; 
+      if(f) {
+        if(confirm(`Import students from ${f.name}? This will modify your current data.`)) {
+          importCSV(f);
+        }
+      }
+      e.target.value = '';
+    });
+    
+    // Clear all button
+    $('#clearBtn').addEventListener('click', () => {
+      if(state.students.length === 0) {
+        alert('No students to clear');
+        return;
+      }
+      if(confirm('Delete ALL students? This cannot be undone.')){ 
+        state.students = []; 
+        state.nextId = 1; 
+        save(); 
+      }
+    });
+    
+    // Table actions (edit/delete)
+    $('#tbl').addEventListener('click', e => {
+      const btn = e.target.closest('button'); 
+      if(!btn) return;
+      
+      const id = parseInt(btn.dataset.id, 10);
+      const action = btn.dataset.act;
+      
+      if(action === 'del'){
+        if(confirm('Delete this student?')) {
+          remove(id);
+        }
+      } else if(action === 'edit'){
+        const student = state.students.find(x => x.id === id); 
+        if(!student) return;
+        
+        $('#name').value = student.name;
+        $('#age').value = student.age;
+        $('#dept').value = student.dept || '';
+        state.editingId = id;
+        $('#saveBtn').textContent = 'Save Changes';
+        $('#resetBtn').classList.remove('hidden');
+        $('#name').focus();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      }
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape' && state.editingId){
+        $('#resetBtn').click();
+      }
+    });
+  }
+
+  // Initialize the app
+  function init(){
+    load();
+    setupEventListeners();
+    render();
+    $('#name').focus();
+  }
+
+  // Start the application
+  init();
+})();
+</script>
+
+<!-- GitHub corner ribbon -->
+<a href="https://github.com/yourusername/student-manager" class="github-corner" aria-label="View source on GitHub" target="_blank">
+  <svg width="80" height="80" viewBox="0 0 250 250" style="position: absolute; top: 0; right: 0; border: 0;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+    <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+    <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+  </svg>
+</a>
 </body>
 </html>
