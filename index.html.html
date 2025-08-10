@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Manager (Offline)</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:16px;line-height:1.4}
+  h1{font-size:1.5rem;margin:0 0 12px}
+  .card{border:1px solid #ddd;border-radius:12px;padding:12px;margin-bottom:12px}
+  label{display:block;font-weight:600;margin-top:8px}
+  input,button{font-size:1rem;padding:10px;border:1px solid #bbb;border-radius:10px;width:100%;box-sizing:border-box}
+  button{width:auto;cursor:pointer}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+  .row{display:grid;grid-template-columns:1fr;gap:8px}
+  @media(min-width:700px){.row{grid-template-columns:1fr 1fr 1fr auto auto}}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+  tr:hover{background:#fafafa}
+  .muted{color:#666;font-size:0.9rem}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #ddd;font-size:0.85rem}
+  .right{margin-left:auto}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <h1>Student Manager</h1>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="name">Name</label>
+        <input id="name" placeholder="e.g., Ali Raza">
+      </div>
+      <div>
+        <label for="age">Age</label>
+        <input id="age" type="number" inputmode="numeric" placeholder="e.g., 18">
+      </div>
+      <div>
+        <label for="dept">Department</label>
+        <input id="dept" placeholder="e.g., Computer Science">
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button id="saveBtn">Add</button>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button id="resetBtn" class="hidden">Cancel Edit</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input id="q" placeholder="Search by name..." style="flex:1">
+      <button id="exportBtn">Export CSV</button>
+      <input id="importFile" type="file" accept=".csv,text/csv" class="hidden">
+      <button id="importBtn">Import CSV</button>
+      <button id="clearBtn">Clear All</button>
+      <span class="pill right" id="count">0 students</span>
+    </div>
+    <div class="muted">Tip: On iPhone, “Share → Add to Home Screen” to use like an app. Data is saved locally on this device.</div>
+  </div>
+
+  <div class="card">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Age</th><th>Dept</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+<script>
+(function(){
+  const LS_KEY = 'students.v1.en';
+  const ID_KEY = 'students.v1.en.nextId';
+  const $ = sel => document.querySelector(sel);
+  const state = { students: [], nextId: 1, editingId: null };
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      const nid = localStorage.getItem(ID_KEY);
+      state.students = raw ? JSON.parse(raw) : [];
+      state.nextId = nid ? parseInt(nid,10) : ((state.students.reduce((m,s)=>Math.max(m,s.id),0)+1)||1);
+    } catch(e){ state.students = []; state.nextId = 1; }
+  }
+  function save(){
+    localStorage.setItem(LS_KEY, JSON.stringify(state.students));
+    localStorage.setItem(ID_KEY, String(state.nextId));
+    render();
+  }
+  function render(){
+    const tbody = $('#tbl tbody');
+    tbody.innerHTML = '';
+    const q = ($('#q').value||'').toLowerCase();
+    let shown = 0;
+    state.students
+      .filter(s => (s.name||'').toLowerCase().includes(q))
+      .forEach(s => {
+        shown++;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.id}</td>
+          <td>${escapeHtml(s.name)}</td>
+          <td>${s.age}</td>
+          <td>${escapeHtml(s.dept||'')}</td>
+          <td>
+            <button data-act="edit" data-id="${s.id}">Edit</button>
+            <button data-act="del" data-id="${s.id}">Delete</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    $('#count').textContent = `${shown} student${shown===1?'':'s'}`;
+  }
+  function escapeHtml(t){
+    return String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+  function add(name, age, dept){ state.students.push({id: state.nextId++, name, age, dept}); save(); }
+  function update(id, name, age, dept){ const s = state.students.find(x=>x.id===id); if(!s) return; s.name=name; s.age=age; s.dept=dept; save(); }
+  function remove(id){ state.students = state.students.filter(s=>s.id!==id); save(); }
+
+  // CSV helpers
+  function exportCSV(){
+    const rows = [['id','name','age','dept']].concat(state.students.map(s=>[s.id,s.name,s.age,s.dept]));
+    const csv = rows.map(r=>r.map(cell=>{
+      const str = String(cell ?? '');
+      return /[",\n]/.test(str) ? `"${str.replace(/"/g,'""')}"` : str;
+    }).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'students.csv'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function parseCsvLine(line){
+    const out=[]; let cur=''; let inQ=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='\"'){ if(inQ && line[i+1]==='\"'){ cur+='\"'; i++; } else inQ=!inQ; }
+      else if(c===',' && !inQ){ out.push(cur); cur=''; }
+      else cur+=c;
+    }
+    out.push(cur); return out;
+  }
+  function importCSV(file){
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      const lines = text.split(/\\r?\\n/).filter(Boolean);
+      const header = lines.shift();
+      const cols = header.split(',').map(h=>h.trim().toLowerCase());
+      const idx = { id: cols.indexOf('id'), name: cols.indexOf('name'), age: cols.indexOf('age'), dept: cols.indexOf('dept') };
+      for(const ln of lines){
+        const p = parseCsvLine(ln);
+        const id = idx.id>=0 ? parseInt(p[idx.id]||'',10) : NaN;
+        const name = (p[idx.name]||'').trim();
+        const age = parseInt(p[idx.age]||'0',10)||0;
+        const dept = (idx.dept>=0 ? p[idx.dept] : '').trim();
+        if(!name) continue;
+        if(!isNaN(id)){
+          const ex = state.students.find(s=>s.id===id);
+          if(ex){ ex.name=name; ex.age=age; ex.dept=dept; } else { state.students.push({id,name,age,dept}); }
+          state.nextId = Math.max(state.nextId, id+1);
+        } else { state.students.push({id: state.nextId++, name, age, dept}); }
+      }
+      save(); alert('Import complete.');
+    };
+    reader.readAsText(file);
+  }
+
+  // UI events
+  document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('name').value.trim();
+    const age = parseInt(document.getElementById('age').value||'0',10);
+    const dept = document.getElementById('dept').value.trim();
+    if(!name){ alert('Name required'); return; }
+    if(age<=0){ alert('Valid age required'); return; }
+    if(state.editingId){
+      update(state.editingId, name, age, dept);
+      state.editingId = null;
+      document.getElementById('saveBtn').textContent = 'Add';
+      document.getElementById('resetBtn').classList.add('hidden');
+    } else {
+      add(name, age, dept);
+    }
+    document.getElementById('name').value='';
+    document.getElementById('age').value='';
+    document.getElementById('dept').value='';
+  });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    state.editingId=null;
+    document.getElementById('name').value='';
+    document.getElementById('age').value='';
+    document.getElementById('dept').value='';
+    document.getElementById('saveBtn').textContent='Add';
+    document.getElementById('resetBtn').classList.add('hidden');
+  });
+  document.getElementById('q').addEventListener('input', render);
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('importBtn').addEventListener('click', ()=> document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', e=>{
+    const f = e.target.files[0]; if(f) importCSV(f); e.target.value='';
+  });
+  document.getElementById('clearBtn').addEventListener('click', ()=>{
+    if(confirm('Delete ALL records?')){ state.students=[]; state.nextId=1; save(); }
+  });
+  document.getElementById('tbl').addEventListener('click', e=>{
+    const btn = e.target.closest('button'); if(!btn) return;
+    const id = parseInt(btn.dataset.id,10);
+    if(btn.dataset.act==='del'){ if(confirm('Delete this student?')) remove(id); }
+    else if(btn.dataset.act==='edit'){
+      const s = state.students.find(x=>x.id===id); if(!s) return;
+      document.getElementById('name').value=s.name;
+      document.getElementById('age').value=s.age;
+      document.getElementById('dept').value=s.dept;
+      state.editingId=id;
+      document.getElementById('saveBtn').textContent='Save Changes';
+      document.getElementById('resetBtn').classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  });
+
+  load(); render();
+})();
+</script>
+</body>
+</html>
