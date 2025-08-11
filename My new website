@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>میری مکمل ویب سائٹ</title>
+    <style>
+        /* بنیادی سٹائلز */
+        body {
+            font-family: 'Nastaleeq', 'Jameel Noori Nastaleeq', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* ہیڈر */
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* نیویگیشن */
+        nav {
+            background: #34495e;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+        
+        /* مرکزی مواد */
+        main {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 70vh;
+        }
+        
+        /* فوٹر */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+        
+        /* کارڈز */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* بٹن */
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ہیڈر -->
+    <header>
+        <h1>میری پروفیشنل ویب سائٹ</h1>
+        <p>خوش آمدید! یہ ایک مکمل تیار شدہ ویب سائٹ ہے</p>
+    </header>
+    
+    <!-- نیویگیشن مینو -->
+    <nav>
+        <a href="#">گھر</a>
+        <a href="#">خدمات</a>
+        <a href="#">مصنوعات</a>
+        <a href="#">ہمارے بارے میں</a>
+        <a href="#">رابطہ</a>
+    </nav>
+    
+    <!-- مرکزی مواد -->
+    <main>
+        <div class="card">
+            <h2>ہماری خدمات</h2>
+            <p>ہم اعلی معیار کی ویب ڈیزائن اور ڈویلپمنٹ خدمات پیش کرتے ہیں۔</p>
+            <a href="#" class="btn">مزید جانیں</a>
+        </div>
+        
+        <div class="card">
+            <h2>ہمارے پروجیکٹس</h2>
+            <p>ہم نے کئی بڑے اداروں کے لیے کام کیا ہے۔</p>
+            <a href="#" class="btn">پورٹ فولیو دیکھیں</a>
+        </div>
+    </main>
+    
+    <!-- فوٹر -->
+    <footer>
+        <p>© 2024 میری کمپنی. تمام حقوق محفوظ ہیں۔</p>
+        <p>رابطہ: info@example.com | فون: 03001234567</p>
+    </footer>
+</body>
+</html>
